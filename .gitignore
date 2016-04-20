@@ -4,3 +4,8 @@ test2*
 
 ## Emacs temp files
 *~
+
+## IntelliJ
+
+.idea/
+*.iml

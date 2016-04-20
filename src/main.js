@@ -7,8 +7,8 @@ var kad = new Kademlia("127.0.0.1", port);
 
 if (args.length >= 3) {
     var seed = {
-	address: args[1],
-	port: parseInt(args[2])
+        address: args[1],
+        port: parseInt(args[2])
     };
     
     kad.connect(seed);

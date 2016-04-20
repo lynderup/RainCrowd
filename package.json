@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/lynderup/RainCrowd#readme",
   "dependencies": {
-    "kad": "^1.5.4"
+    "kad": "^1.5.4",
+    "websocket": "^1.0.22"
   }
 }

@@ -10,7 +10,7 @@ var Kademlia = function (host, port) {
     var router = new kad.Router({
 	transport: rpc,
 	logger: new kad.Logger(3)
-    })
+    });
 
     var dht = new kad.Node({
 	transport: rpc,
@@ -25,6 +25,6 @@ var Kademlia = function (host, port) {
     this.connect = (seed) => {
 	dht.connect(seed, () => {});
     }
-}
+};
 
 exports.Kademlia = Kademlia;

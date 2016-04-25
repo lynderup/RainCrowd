@@ -1,11 +1,13 @@
 var kad = require('kad');
-const CROWD_SIZE = 10;
+var Face = require('./face').Face;
+var FaceContact = require('./facecontact').FaceContact;
 
-var Kademlia = function (host, port) {
+var Kademlia = function (host, port, facePort) {
 
-    var rpc = kad.transports.UDP(kad.contacts.AddressPortContact({
+    var rpc = kad.transports.UDP(FaceContact({
         address: host,
-        port: port
+        port: port,
+        facePort: facePort
     }));
 
     var router = new kad.Router({
@@ -19,6 +21,8 @@ var Kademlia = function (host, port) {
         router: router,
         logger: new kad.Logger(3)
     });
+    
+    var face = new Face(facePort);
 
     dht.on("join", () => {
     });

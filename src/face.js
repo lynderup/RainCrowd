@@ -3,28 +3,11 @@
  */
 
 var WebSocketServer = require('websocket').server;
-var WebSocketClient = require('websocket').client;
 var http = require('http');
+var FaceSpeak = require('./facespeak').FaceSpeak;
 
 
-var Face = function (port, contacts) {
-
-    /**
-     * Connects to the given contacts, to let them calculate for this node
-     */
-    var startClients = function (callback) {
-        for (var i = 0; i < contacts.length; ++i) {
-            var client = new WebSocketClient();
-
-            client.on('connect', (connection) => {
-                console.log("WebSocket Client Connected");
-                callback();
-                connection.on('close', () => console.log("Closed"));
-            });
-
-            client.connect('ws://' + contacts[i].host + ':' + contacts[i].port, 'raining-protocol');
-        }
-    };
+var Face = function (port) {
 
     /**
      * Start a server for others to contact, to let this node perform calculations
@@ -43,14 +26,18 @@ var Face = function (port, contacts) {
 
         webServer.on('request', (request) => {
             callback(request.accept('raining-protocol', request.origin));
-        })
+        });
     };
 
-    if(contacts) {
-        startClients(() => console.log("startClients callback"));
-    } else {
-        startServer(() => console.log("startServer callback"));
-    }
+    startServer((connection) => {
+        connection.on('message', (message) => {
+            if(message.type !== 'utf8') {
+                console.log("[Server " + port + "] Bad message type!");
+            } else {
+                connection.send(FaceSpeak.interpret(JSON.parse(message.utf8Data)));
+            }
+        })
+    });
 };
 
 exports.Face = Face;

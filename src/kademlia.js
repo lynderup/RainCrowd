@@ -1,4 +1,5 @@
 var kad = require('kad');
+const CROWD_SIZE = 10;
 
 var Kademlia = function (host, port) {
 
@@ -24,6 +25,12 @@ var Kademlia = function (host, port) {
 
     this.connect = (seed) => {
         dht.connect(seed, () => {
+        });
+    };
+
+    this.getCrowd = (callback) => {
+        router.findNode(kad.utils.createID("" + Math.random()), (err, value) => {
+            callback(err, value);
         });
     }
 };

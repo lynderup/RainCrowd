@@ -7,6 +7,18 @@ var BlockChain = function () {
             cost++;
         }
         console.log("Started transaction for for " + contact.port + " for a cost of " + cost);
+        return 42;
+    };
+
+    this.checkForVerifiedTransaction = function (id) {
+        return true;
+    };
+
+    this.commitTransactionResult = function (id, result) {
+        return true;
+    };
+
+    this.checkForCommittedTransaction = function (id) {
         return true;
     };
 };

@@ -31,15 +31,26 @@ var Face = function (port, blockChain, wallet) {
 
     startServer((connection) => {
         connection.on('message', (message) => {
-            if(message.type !== 'utf8') {
+            if (message.type !== 'utf8') {
                 console.log("[Server " + port + "] Bad message type!");
             } else {
-                var program = JSON.parse(message.utf8Data);
-                var programCost = FaceSpeak.computeCost(program);
-                connection.send(FaceSpeak.interpret(program));
-                //todo second-fase verification
+                var params = JSON.parse(message.utf8Data);
+                var programCost = FaceSpeak.computeCost(params.program);
+                if (!blockChain.checkForVerifiedTransaction(params.id)) {
+                    connection.close();
+                    return;
+                }
+                var result = FaceSpeak.interpret(params.program);
+                blockChain.commitTransactionResult(params.id, result);
+                // Even though the client can fetch this result from the blockChain, we are nice and send it directly
+                //  so the client doesn't have to wait for the transaction to get committed by the blockChain.
+                connection.send(JSON.parse(result));
+                // Refuse to do any work, untill we are paid for the previous work.
+                while (!blockChain.checkForCommittedTransaction(params.id)) {
+                    ;;; // NOP
+                }
                 wallet.addCoins(programCost);
-                console.log("[" + port + "]" + " - now haz: " + wallet.getWealth());
+                console.log("[" + port + "]" + " - now has: " + wallet.getWealth());
             }
         })
     });

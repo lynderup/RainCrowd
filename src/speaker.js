@@ -5,17 +5,23 @@
 var WebSocketClient = require('websocket').client;
 var http = require('http');
 var BlockingQueue = require('block-queue');
+var faceSpeak = require('./facespeak').FaceSpeak;
 
 var Speaker = function (contacts, programs, blockChain) {
     var programIndex = 0;
-    var connections = BlockingQueue(1, (connection, done) => {
+    var connections = BlockingQueue(1, (server, done) => {
         console.log("Pop");
         if (programIndex >= programs.length) {
             console.log("Closing connection");
-            connection.close();
+            server.connection.close();
         } else {
             console.log("Sending program: " + programIndex);
-            connection.send(JSON.stringify(programs[programIndex++]));
+            var program = programs[programIndex++];
+            if( blockChain.startTransaction(server.contact, faceSpeak.computeCost(program))) {
+                server.connection.send(JSON.stringify(program));
+            } else {
+                console.log("Not enough currency to compute " + JSON.stringify(program, null, 2));
+            }
         }
         done();
     });
@@ -27,15 +33,17 @@ var Speaker = function (contacts, programs, blockChain) {
         for (var i = 0; i < contacts.length; ++i) {
             var client = new WebSocketClient();
 
-            client.on('connect', (connection) => {
-                console.log("WebSocket Client Connected");
-                connections.push(connection);
-                connection.on('close', () => console.log("Closed"));
-                connection.on('message', (message) => {
-                    console.log("Received: " + message.utf8Data);
-                    connections.push(connection);
+            (function (i) {
+                client.on('connect', (connection) => {
+                    console.log("WebSocket Client Connected");
+                    connections.push({connection: connection, contact: contacts[i]});
+                    connection.on('close', () => console.log("Closed"));
+                    connection.on('message', (message) => {
+                        console.log("Received: " + message.utf8Data);
+                        connections.push({connection: connection, contact: contacts[i]});
+                    });
                 });
-            });
+            })(i);
 
             console.log(contacts[i].address + ':' + contacts[i].facePort);
             client.connect('ws://' + contacts[i].address + ':' + contacts[i].facePort, 'raining-protocol');

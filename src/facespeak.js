@@ -29,6 +29,9 @@ var FaceSpeak = {
             return left / right;
         }
         throw "Invalid expression: " + program.expr;
+    }, 
+    computeCost: function (program) {
+        return 42;
     }
 };
 

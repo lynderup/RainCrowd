@@ -26,7 +26,7 @@ var Raindrop = function (host, port, facePort, blockChain) {
         logger: new kad.Logger(3)
     });
     
-    var face = new Face(facePort, blockChain);
+    var face = new Face(facePort, blockChain, wallet);
 
     dht.on("join", () => {
     });

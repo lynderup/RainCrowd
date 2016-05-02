@@ -5,9 +5,9 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 var FaceSpeak = require('./facespeak').FaceSpeak;
+var Wallet = require('./wallet').Wallet;
 
-
-var Face = function (port, blockChain) {
+var Face = function (port, blockChain, wallet) {
 
     /**
      * Start a server for others to contact, to let this node perform calculations
@@ -34,7 +34,12 @@ var Face = function (port, blockChain) {
             if(message.type !== 'utf8') {
                 console.log("[Server " + port + "] Bad message type!");
             } else {
-                connection.send(FaceSpeak.interpret(JSON.parse(message.utf8Data)));
+                var program = JSON.parse(message.utf8Data);
+                var programCost = FaceSpeak.computeCost(program);
+                connection.send(FaceSpeak.interpret(program));
+                //todo second-fase verification
+                wallet.addCoins(programCost);
+                console.log("[" + port + "]" + " - now haz: " + wallet.getWealth());
             }
         })
     });

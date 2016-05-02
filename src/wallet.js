@@ -12,6 +12,14 @@ var Wallet = function () {
         }
         return coins;
     };
+
+    this.addCoins = function (amount) {
+        treasure += amount;
+    };
+
+    this.getWealth = function () {
+        return treasure;
+    };
 };
 
 exports.Wallet = Wallet;

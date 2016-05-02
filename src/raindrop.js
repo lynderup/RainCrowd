@@ -2,9 +2,12 @@ var kad = require('kad');
 var Face = require('./face').Face;
 var FaceContact = require('./facecontact').FaceContact;
 var Speaker = require('./speaker').Speaker;
+var Wallet =  require('./wallet').Wallet;
 
-var Kademlia = function (host, port, facePort, blockChain) {
+var Raindrop = function (host, port, facePort, blockChain) {
 
+    var wallet = new Wallet();
+    
     var rpc = kad.transports.UDP(FaceContact({
         address: host,
         port: port,
@@ -45,9 +48,9 @@ var Kademlia = function (host, port, facePort, blockChain) {
             for (var i = 0; i < val.length; ++i) {
                 console.log("[" + i + "]" + val[i].facePort);
             }
-            var speaker = new Speaker(val, programs, blockChain);
+            var speaker = new Speaker(val, programs, blockChain, wallet);
         });
     };
 };
 
-exports.Kademlia = Kademlia;
+exports.Raindrop = Raindrop;

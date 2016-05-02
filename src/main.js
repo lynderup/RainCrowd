@@ -1,9 +1,9 @@
-var Kademlia = require('./raindrop').Kademlia;
+var Raindrop = require('./raindrop').Raindrop;
 
 var args = process.argv.slice(2);
 var port = parseInt(args[0]);
 
-var kad = new Kademlia("127.0.0.1", port, port + 1000);
+var raindrop = new Raindrop("127.0.0.1", port, port + 1000);
 
 if (args.length >= 3) {
     var seed = {
@@ -11,5 +11,5 @@ if (args.length >= 3) {
         port: parseInt(args[2])
     };
     
-    kad.connect(seed);
+    raindrop.connect(seed);
 }

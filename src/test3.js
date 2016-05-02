@@ -1,4 +1,4 @@
-var Raindrop = require('./raindrop').Kademlia;
+var Raindrop = require('./raindrop').Raindrop;
 var BlockChain = require("./blockchain").BlockChain;
 
 var basePort = 5000;

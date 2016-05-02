@@ -31,7 +31,7 @@ var FaceSpeak = {
         throw "Invalid expression: " + program.expr;
     }, 
     computeCost: function (program) {
-        return 42;
+        return 3;
     }
 };
 

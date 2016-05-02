@@ -7,7 +7,7 @@ var http = require('http');
 var BlockingQueue = require('block-queue');
 var faceSpeak = require('./facespeak').FaceSpeak;
 
-var Speaker = function (contacts, programs, blockChain) {
+var Speaker = function (contacts, programs, blockChain, wallet) {
     var programIndex = 0;
     var connections = BlockingQueue(1, (server, done) => {
         console.log("Pop");
@@ -17,10 +17,16 @@ var Speaker = function (contacts, programs, blockChain) {
         } else {
             console.log("Sending program: " + programIndex);
             var program = programs[programIndex++];
-            if( blockChain.startTransaction(server.contact, faceSpeak.computeCost(program))) {
+            var coins = wallet.getCoins(faceSpeak.computeCost(program));
+            if (!coins) {
+                console.log("Not enough currency to compute " + JSON.stringify(program, null, 2));
+                done();
+                return;
+            }
+            if (blockChain.startTransaction(server.contact, coins)) {
                 server.connection.send(JSON.stringify(program));
             } else {
-                console.log("Not enough currency to compute " + JSON.stringify(program, null, 2));
+                console.log("BlockChain rejected your startTransaction request");
             }
         }
         done();

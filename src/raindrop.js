@@ -1,8 +1,9 @@
 var kad = require('kad');
 var Face = require('./face').Face;
 var FaceContact = require('./facecontact').FaceContact;
+var Speaker = require('./speaker').Speaker;
 
-var Kademlia = function (host, port, facePort) {
+var Kademlia = function (host, port, facePort, blockChain) {
 
     var rpc = kad.transports.UDP(FaceContact({
         address: host,
@@ -22,21 +23,31 @@ var Kademlia = function (host, port, facePort) {
         logger: new kad.Logger(3)
     });
     
-    var face = new Face(facePort);
+    var face = new Face(facePort, blockChain);
 
     dht.on("join", () => {
     });
 
-    this.connect = (seed) => {
+    this.connect = function (seed) {
         dht.connect(seed, () => {
         });
     };
 
-    this.getCrowd = (callback) => {
+    var getCrowd = function (callback) {
         router.findNode(kad.utils.createID("" + Math.random()), (err, value) => {
             callback(err, value);
         });
-    }
+    };
+
+    this.runPrograms = function (programs) {
+        getCrowd((err, val) => {
+            console.log("getCrowd");
+            for (var i = 0; i < val.length; ++i) {
+                console.log("[" + i + "]" + val[i].facePort);
+            }
+            var speaker = new Speaker(val, programs, blockChain);
+        });
+    };
 };
 
 exports.Kademlia = Kademlia;

@@ -16,11 +16,11 @@ var FaceContact = function (options) {
     this.port = options.port;
     this.facePort = options.facePort;
 
-    //kad.Contact.call(this, options);
+    //raindrop.Contact.call(this, options);
     kad.contacts.AddressPortContact.call(this, options);
 };
 
-//inherits(FaceContact, kad.Contact);
+//inherits(FaceContact, raindrop.Contact);
 inherits(FaceContact, kad.contacts.AddressPortContact);
 
 FaceContact.prototype._createNodeID = function() {

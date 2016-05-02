@@ -7,7 +7,7 @@ var http = require('http');
 var FaceSpeak = require('./facespeak').FaceSpeak;
 
 
-var Face = function (port) {
+var Face = function (port, blockChain) {
 
     /**
      * Start a server for others to contact, to let this node perform calculations

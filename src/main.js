@@ -1,4 +1,4 @@
-var Kademlia = require('./kademlia').Kademlia;
+var Kademlia = require('./raindrop').Kademlia;
 
 var args = process.argv.slice(2);
 var port = parseInt(args[0]);

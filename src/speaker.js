@@ -6,7 +6,7 @@ var WebSocketClient = require('websocket').client;
 var http = require('http');
 var BlockingQueue = require('block-queue');
 
-var Speaker = function (contacts, programs) {
+var Speaker = function (contacts, programs, blockChain) {
     var programIndex = 0;
     var connections = BlockingQueue(1, (connection, done) => {
         console.log("Pop");

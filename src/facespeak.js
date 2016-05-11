@@ -65,8 +65,7 @@ var interpreter = {
         var from = interpreter.visit(program.from, env);
         var to = interpreter.visit(program.to, env);
         var initial = interpreter.visit(program.initialval, env);
-        var newEnv = Object.create(env);
-        newEnv[program.loopvar] = initial;
+        var newEnv = interpreter.extend(env, program.loopvar, initial);
         for (var i = from; i < to; ++i) {
             newEnv[program.loopvar] = interpreter.visit(program.body, newEnv);
         }
@@ -85,6 +84,11 @@ var interpreter = {
         else if (arrayContains(loopOps, program.expr)) return interpreter.visitLoopOp(program, env);
 
         throw "Invalid expression: " + program.expr;
+    },
+    extend: function (env, variable, value) {
+        var newEnv = Object.create(env);
+        newEnv[variable] = value;
+        return newEnv;
     },
     lookup: function (env, variable) {
         var lookupResult = env[variable];
@@ -111,11 +115,20 @@ var FaceSpeak = {
             var costRight = FaceSpeak.computeCost(program.right);
             var costLeft = FaceSpeak.computeCost(program.left);
             return costLeft + costRight + 1;
-        } else { //Only if left
+        } else if(arrayContains(branchOps, program.expr)) {
             var costCond = FaceSpeak.computeCost(program.cond);
             var costBody = FaceSpeak.computeCost(program.body);
             var costElse = FaceSpeak.computeCost(program.else);
             return costCond + Math.max(costBody, costElse) + 1;
+        } else if(arrayContains(letOps, program.expr)) {
+            var costVar = FaceSpeak.computeCost(program.varexpr);
+            var costBody = FaceSpeak.computeCost(program.body);
+            return costVar + costBody + 1;
+        } else if(arrayContains(loopOps, program.expr)) {
+            var costInitial = FaceSpeak.computeCost(program.initialval);
+            var costBody = FaceSpeak.computeCost(program.body);
+            var loopCount = program.to - program.from;
+            return  costInitial + (costBody * loopCount) + 1;
         }
     },
     generateRandom: (size) => {

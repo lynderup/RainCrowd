@@ -4,8 +4,9 @@
 var assert = require('assert');
 
 var binOps = ["plus", "times", "minus", "divide"];
-var branchOps = ["while", "if"];
+var branchOps = ["if"];
 var letOps = ["let"];
+var loopOps = ["for"];
 
 function arrayContains(arr, elem) {
     return arr.indexOf(elem) > -1;
@@ -54,6 +55,23 @@ var interpreter = {
         newEnv[program.varname] = varexpr;
         return interpreter.visit(program.body, newEnv);
     },
+    visitLoopOp: function (program, env) {
+        assert(typeof program.loopvar == 'string', 'Invalid loop variable name');
+        assert(typeof program.initialval != 'undefined', 'Invalid initial value expression');
+        assert(typeof program.from == 'number', 'start bound was not a number');
+        assert(typeof program.to == 'number', 'end bound was not a number');
+        assert(typeof program.body != 'undefined', 'Invalid to body');
+
+        var from = interpreter.visit(program.from, env);
+        var to = interpreter.visit(program.to, env);
+        var initial = interpreter.visit(program.initialval, env);
+        var newEnv = Object.create(env);
+        newEnv[program.loopvar] = initial;
+        for (var i = from; i < to; ++i) {
+            newEnv[program.loopvar] = interpreter.visit(program.body, newEnv);
+        }
+        return newEnv[program.loopvar];
+    },
     visit: function (program, env) {
         if (typeof program == "number") return program;
         if (typeof program == "boolean") return program;
@@ -64,6 +82,7 @@ var interpreter = {
         if (arrayContains(binOps, program.expr)) return interpreter.visitBinOp(program, env);
         else if (arrayContains(branchOps, program.expr)) return interpreter.visitBranchOp(program, env);
         else if (arrayContains(letOps, program.expr)) return interpreter.visitLetOp(program, env);
+        else if (arrayContains(loopOps, program.expr)) return interpreter.visitLoopOp(program, env);
 
         throw "Invalid expression: " + program.expr;
     },

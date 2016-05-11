@@ -5,6 +5,7 @@ var assert = require('assert');
 
 var binOps = ["plus", "times", "minus", "divide"];
 var branchOps = ["while", "if"];
+var letOps = ["let"];
 
 function arrayContains(arr, elem) {
     return arr.indexOf(elem) > -1;
@@ -43,6 +44,16 @@ var interpreter = {
             }
         }
     },
+    visitLetOp: function (program, env) {
+        assert(typeof program.varname == 'string', 'Invalid variable name');
+        assert(typeof program.varexpr != 'undefined', 'Invalid value expression');
+        assert(typeof program.body != 'undefined', 'Invalid body');
+
+        var varexpr = interpreter.visit(program.varexpr, env);
+        var newEnv = Object.create(env);
+        newEnv[program.varname] = varexpr;
+        return interpreter.visit(program.body, newEnv);
+    },
     visit: function (program, env) {
         if (typeof program == "number") return program;
         if (typeof program == "boolean") return program;
@@ -52,6 +63,7 @@ var interpreter = {
         assert(typeof program.expr == 'string', 'Invalid expr');
         if (arrayContains(binOps, program.expr)) return interpreter.visitBinOp(program, env);
         else if (arrayContains(branchOps, program.expr)) return interpreter.visitBranchOp(program, env);
+        else if (arrayContains(letOps, program.expr)) return interpreter.visitLetOp(program, env);
 
         throw "Invalid expression: " + program.expr;
     },
@@ -67,7 +79,7 @@ var interpreter = {
 var FaceSpeak = {
 // TODO consistency
     interpret: (program) => {
-        return interpreter.visit(program, {foo: 4});
+        return interpreter.visit(program, {});
     },
     computeCost: function (program) {
         if(typeof program == 'number') {

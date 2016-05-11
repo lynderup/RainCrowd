@@ -1,4 +1,4 @@
-var FaceSpeak = require('./FaceSpeak').FaceSpeak;
+var FaceSpeak = require('./../facespeak').FaceSpeak;
 var assert = require('assert');
 
 assert(FaceSpeak.interpret({

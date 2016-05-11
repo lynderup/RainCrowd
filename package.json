@@ -17,7 +17,9 @@
   "homepage": "https://github.com/lynderup/RainCrowd#readme",
   "dependencies": {
     "block-queue": "0.0.2",
+    "get-pixels": "^3.3.0",
     "kad": "^1.5.4",
+    "node-png": "^0.4.3",
     "websocket": "^1.0.22"
   }
 }

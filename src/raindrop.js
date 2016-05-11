@@ -21,7 +21,7 @@ var Raindrop = function (host, port, facePort, blockChain) {
 
     var dht = new kad.Node({
         transport: rpc,
-        storage: kad.storage.FS('./test1/'),
+        storage: kad.storage.FS('./tests/'),
         router: router,
         logger: new kad.Logger(3)
     });

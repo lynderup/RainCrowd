@@ -57,12 +57,21 @@ var interpreter = {
 };
 
 var FaceSpeak = {
-
+// TODO consistency
     interpret: (program) => {
         return interpreter.visit(program);
     },
     computeCost: function (program) {
-        return 3;
+        if(arrayContains(binOps, program.expr)) {
+            var costRight = FaceSpeak.computeCost(program.right);
+            var costLeft = FaceSpeak.computeCost(program.left);
+            return costLeft + costRight + 1;
+        } else { //Only if left
+            var costCond = FaceSpeak.computeCost(program.cond);
+            var costBody = FaceSpeak.computeCost(program.body);
+            var costElse = FaceSpeak.computeCost(program.else);
+            return costCond + Math.max(costBody, costElse);
+        }
     },
     generateRandom: (size) => {
         if (size <= 0) return randomInt(100);

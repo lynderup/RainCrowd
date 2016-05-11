@@ -1,5 +1,5 @@
-var Raindrop = require('./../raindrop').Raindrop;
-var BlockChain = require("./../blockChain").BlockChain;
+var Raindrop = require('./../../raindrop').Raindrop;
+var BlockChain = require("./../../blockChain").BlockChain;
 
 var basePort = 5000;
 

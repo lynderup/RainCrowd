@@ -62,6 +62,9 @@ var FaceSpeak = {
         return interpreter.visit(program);
     },
     computeCost: function (program) {
+        if(typeof program == 'number') {
+            return 0;
+        }
         if(arrayContains(binOps, program.expr)) {
             var costRight = FaceSpeak.computeCost(program.right);
             var costLeft = FaceSpeak.computeCost(program.left);
@@ -70,7 +73,7 @@ var FaceSpeak = {
             var costCond = FaceSpeak.computeCost(program.cond);
             var costBody = FaceSpeak.computeCost(program.body);
             var costElse = FaceSpeak.computeCost(program.else);
-            return costCond + Math.max(costBody, costElse);
+            return costCond + Math.max(costBody, costElse) + 1;
         }
     },
     generateRandom: (size) => {

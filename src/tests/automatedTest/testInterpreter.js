@@ -66,3 +66,16 @@ assert.equal(FaceSpeak.interpret({
             }
         }
     }), 3);
+
+assert.equal(FaceSpeak.interpret({
+    expr: "for",
+    loopvar: "foo",
+    initialval: 2,
+    from: 0,
+    to: 3,
+    body: {
+        expr: "plus",
+        left: 1,
+        right: "foo"
+    }
+}), 5);

@@ -2,23 +2,23 @@
  * Created by Camilla on 11-05-2016.
  */
 
-var Facespeak = require('./../../facespeak').FaceSpeak;
+var FaceSpeak = require('./../../facespeak').FaceSpeak;
 var assert = require('assert');
 
-assert(Facespeak.computeCost({
+assert.equal(FaceSpeak.computeCost({
         expr: "times",
         left: 1,
         right: 2
-    }) == 1);
+    }), 1);
 
-assert(Facespeak.computeCost({
+assert.equal(FaceSpeak.computeCost({
         expr: "if",
         cond: 0,
         body: 1,
         else: 2
-    }) == 1);
+    }), 1);
 
-assert(Facespeak.computeCost({
+assert.equal(FaceSpeak.computeCost({
     "expr": "times",
     "left": {
         "expr": "times",
@@ -82,10 +82,27 @@ assert(Facespeak.computeCost({
         }
     },
     "right": 40
-}) == 16);
+}), 16);
 
-assert(Facespeak.computeCost({
+assert.equal(FaceSpeak.computeCost({
         expr: "plus",
         left: 1,
         right: "foo"
-    }) == 1);
+    }), 1);
+
+
+assert.equal(FaceSpeak.computeCost({
+    expr: "let",
+    varname: "foo",
+    varexpr: 5,
+    body: {
+        expr: "plus",
+        left: 1,
+        right: {
+            expr: "let",
+            varname: "foo",
+            varexpr: 2,
+            body: "foo"
+        }
+    }
+}), 3);

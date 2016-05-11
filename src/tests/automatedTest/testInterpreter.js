@@ -38,3 +38,9 @@ assert(FaceSpeak.interpret({
     body: 1,
     else: 2
 }) == 2);
+
+assert(FaceSpeak.interpret({
+    expr: "plus",
+    left: 1,
+    right: "foo"
+}) == 5);

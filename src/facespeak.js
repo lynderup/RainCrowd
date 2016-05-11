@@ -11,12 +11,12 @@ function arrayContains(arr, elem) {
 }
 
 var interpreter = {
-    visitBinOp: function (program) {
+    visitBinOp: function (program, env) {
         assert(program.left != undefined, 'Invalid left');
         assert(program.right != undefined, 'Invalid right');
 
-        var left = interpreter.visit(program.left);
-        var right = interpreter.visit(program.right);
+        var left = interpreter.visit(program.left, env);
+        var right = interpreter.visit(program.right, env);
         if (program.expr == "plus") {
             return left + right;
         }
@@ -30,39 +30,50 @@ var interpreter = {
             return left / right;
         }
     },
-    visitBranchOp: function (program) {
+    visitBranchOp: function (program, env) {
         assert(program.cond != undefined, 'Invalid condition');
         assert(program.body != undefined, 'Invalid body');
-        var cond = interpreter.visit(program.cond);
+        var cond = interpreter.visit(program.cond, env);
         if (program.expr == "if") {
             assert(program.else != undefined, 'Invalid else');
             if (cond) {
-                return interpreter.visit(program.body);
+                return interpreter.visit(program.body, env);
             } else {
-                return interpreter.visit(program.else);
+                return interpreter.visit(program.else, env);
             }
         }
     },
-    visit: function (program) {
+    visit: function (program, env) {
         if (typeof program == "number") return program;
         if (typeof program == "boolean") return program;
+        if (typeof program == "string") return interpreter.lookup(env, program);
         
         assert(typeof program == 'object', 'Invalid program type');
         assert(typeof program.expr == 'string', 'Invalid expr');
-        if (arrayContains(binOps, program.expr)) return interpreter.visitBinOp(program);
-        else if (arrayContains(branchOps, program.expr)) return interpreter.visitBranchOp(program);
+        if (arrayContains(binOps, program.expr)) return interpreter.visitBinOp(program, env);
+        else if (arrayContains(branchOps, program.expr)) return interpreter.visitBranchOp(program, env);
 
         throw "Invalid expression: " + program.expr;
+    },
+    lookup: function (env, variable) {
+        var lookupResult = env[variable];
+        if (typeof lookupResult == 'undefined') {
+            throw "Variable not defined: " + variable;
+        }
+        return lookupResult;
     }
 };
 
 var FaceSpeak = {
 // TODO consistency
     interpret: (program) => {
-        return interpreter.visit(program);
+        return interpreter.visit(program, {foo: 4});
     },
     computeCost: function (program) {
         if(typeof program == 'number') {
+            return 0;
+        }
+        if(typeof program == 'string') {
             return 0;
         }
         if(arrayContains(binOps, program.expr)) {

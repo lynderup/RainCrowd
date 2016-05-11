@@ -84,4 +84,8 @@ assert(Facespeak.computeCost({
     "right": 40
 }) == 16);
 
-
+assert(Facespeak.computeCost({
+        expr: "plus",
+        left: 1,
+        right: "foo"
+    }) == 1);

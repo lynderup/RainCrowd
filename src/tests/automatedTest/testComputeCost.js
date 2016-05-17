@@ -127,7 +127,21 @@ assert.equal(FaceSpeak.computeCost({
     expr: "subscript",
     body: "foo",
     index: 2
-}, {foo: [1, 2, 3, 4]}), 1);
+}), 1);
+
+assert.equal(FaceSpeak.computeCost({
+    expr: "subscript",
+    body: "foo",
+    index: 2,
+    val: 42
+}), 1);
+
+assert.equal(FaceSpeak.computeCost({
+    expr: "subscript",
+    body: {expr: "array"},
+    index: 0,
+    val: 42
+}), 2);
 
 assert.equal(FaceSpeak.computeCost({
     expr: "subscript",
@@ -137,4 +151,4 @@ assert.equal(FaceSpeak.computeCost({
         index: 1
     },
     index: 0
-}, {foo: [[0, 1], [2, 3]]}), 2);
+}), 2);

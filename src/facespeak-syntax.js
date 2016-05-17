@@ -15,6 +15,18 @@ var Syntax = {
     divide: function (left, right) {
         return {expr: "divide", left: left, right: right}
     },
+    modulo: function (left, right) {
+        return {expr: "modulo", left: left, right: right}
+    },
+    pow: function (left, right) {
+        return {expr: "pow", left: left, right: right}
+    },
+    lt: function (left, right) {
+        return {expr: "lt", left: left, right: right}
+    },
+    and: function (left, right) {
+        return {expr: "and", left: left, right: right}
+    },
     if: function (cond, body, el) {
         return {expr: "if", cond: cond, body: body, else: el}
     },
@@ -55,6 +67,10 @@ exports.static = function (scope) {
     scope._minus = Syntax.minus;
     scope._times = Syntax.times;
     scope._divide = Syntax.divide;
+    scope._modulo = Syntax.modulo;
+    scope._pow = Syntax.pow;
+    scope._lt = Syntax.lt;
+    scope._and = Syntax.and;
     scope._if = Syntax.if;
     scope._let = Syntax.let;
     scope._for = Syntax.for;

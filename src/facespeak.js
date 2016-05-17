@@ -3,7 +3,7 @@
  */
 var assert = require('assert');
 
-var binOps = ["plus", "times", "minus", "divide"];
+var binOps = ["plus", "times", "minus", "divide", "modulo", "pow", "lt", "and"];
 var branchOps = ["if"];
 var letOps = ["let"];
 var loopOps = ["for"];
@@ -14,6 +14,15 @@ function arrayContains(arr, elem) {
 }
 
 var interpreter = {
+    showProgress: false,
+    totalCost: 0,
+    currentCost: 0,
+    _progress: function () {
+        if (!interpreter.showProgress) return;
+        //process.stdout.clearLine();  // clear current text
+        process.stdout.cursorTo(0);  // move cursor to beginning of line
+        process.stdout.write("Progress: " + (Math.round(1000*interpreter.currentCost / interpreter.totalCost)/10));
+    },
     visitBinOp: function (program, env) {
         assert(program.left != undefined, 'Invalid left');
         assert(program.right != undefined, 'Invalid right');
@@ -31,6 +40,18 @@ var interpreter = {
         }
         if (program.expr == "divide") {
             return left / right;
+        }
+        if (program.expr == "modulo") {
+            return left % right;
+        }
+        if (program.expr == "pow") {
+            return Math.pow(left, right);
+        }
+        if (program.expr == "lt") {
+            return left < right;
+        }
+        if (program.expr == "and") {
+            return left && right;
         }
     },
     visitBranchOp: function (program, env) {
@@ -79,23 +100,26 @@ var interpreter = {
         assert(typeof program.index != 'undefined', 'Invalid index expression');
         var body = interpreter.visit(program.body, env);
         var index = interpreter.visit(program.index, env);
-        if(typeof body != 'object') throw 'Subscript was not an object';
-        if(typeof program.val != 'undefined') {
+        if (typeof body != 'object') throw 'Subscript was not an object';
+        if (typeof program.val != 'undefined') {
             body[index] = interpreter.visit(program.val, env);
             return body;
         }
         return body[index];
     },
     visit: function (program, env) {
+        interpreter.currentCost += FaceSpeak.computeCost(program, true);
+        interpreter._progress();
+
         if (typeof program == "number") return program;
         if (typeof program == "boolean") return program;
         if (typeof program == "string") return interpreter.lookup(env, program);
 
         assert(typeof program == 'object', 'Invalid program type');
         assert(typeof program.expr == 'string', 'Invalid expr');
-        
+
         // {expr: "array"}
-        if(program.expr == "array") return [];
+        if (program.expr == "array") return [];
 
         if (arrayContains(binOps, program.expr)) return interpreter.visitBinOp(program, env);
         else if (arrayContains(branchOps, program.expr)) return interpreter.visitBranchOp(program, env);
@@ -122,18 +146,28 @@ var interpreter = {
 var FaceSpeak = {
 // TODO consistency
     interpret: (program, env) => {
+        interpreter.totalCost = FaceSpeak.computeCost(program);
+        interpreter.currentCost = 0;
+        console.log(interpreter.totalCost);
         var _env = env;
         if (_env == null) {
             _env = {};
         }
-        return interpreter.visit(program, _env);
+        var res = interpreter.visit(program, _env);
+        console.log(" -- DONE");
+        return res;
     },
-    computeCost: function (program) {
-        if (typeof program == 'number') {
-            return 0;
-        }
-        if (typeof program == 'string') {
-            return 0;
+    showProgress: (val) => {
+        interpreter.showProgress = val;
+    },
+    computeCost: (program, shallow) => {
+        if (typeof program == 'number') return 0;
+        if (typeof program == 'string') return 0;
+        if (program.expr == "array") return 1;
+
+        if (shallow) {
+            // handle special cases here
+            return 1;
         }
         if (arrayContains(binOps, program.expr)) {
             var costRight = FaceSpeak.computeCost(program.right);
@@ -156,7 +190,11 @@ var FaceSpeak = {
         } else if (arrayContains(subscriptOps, program.expr)) {
             var costBody = FaceSpeak.computeCost(program.body);
             var costIndex = FaceSpeak.computeCost(program.index);
-            return costBody + costIndex + 1;
+            var costVal = 0;
+            if(typeof program.val != 'undefined') {
+                costVal = FaceSpeak.computeCost(program.val);
+            }
+            return costBody + costIndex + costVal + 1;
         }
     },
     generateRandom: (size) => {

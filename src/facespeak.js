@@ -81,7 +81,7 @@ var interpreter = {
         var index = interpreter.visit(program.index, env);
         if(typeof body != 'object') throw 'Subscript was not an object';
         if(typeof program.val != 'undefined') {
-            body[index] = program.val;
+            body[index] = interpreter.visit(program.val, env);
             return body;
         }
         return body[index];

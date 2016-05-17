@@ -44,6 +44,9 @@ var Syntax = {
             body: body,
             val: val
         }
+    },
+    array: function () {
+        return { expr: "array" }
     }
 };
 
@@ -56,4 +59,5 @@ exports.static = function (scope) {
     scope._let = Syntax.let;
     scope._for = Syntax.for;
     scope._subscript = Syntax.subscript;
+    scope._array = Syntax.array;
 };

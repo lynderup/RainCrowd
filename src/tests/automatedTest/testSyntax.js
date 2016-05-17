@@ -32,6 +32,14 @@ assert.equal(FaceSpeak.interpret(
     _subscript("foo", 2),
     {foo: [1, 2, 3, 4]}), 3);
 
+assert.deepEqual(FaceSpeak.interpret(
+    _subscript("foo", 2, 42), 
+    {foo: [1, 2, 3, 4]}), [1, 2, 42, 4]);
+
+assert.deepEqual(FaceSpeak.interpret(
+    _subscript(_array(), 0, 42)),
+    [42]);
+
 assert.equal(FaceSpeak.interpret(
     _subscript(_subscript("foo", 1), 0),
     {foo: [[0, 1], [2, 3]]}), 2);

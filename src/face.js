@@ -22,7 +22,7 @@ var Face = function (port, blockChain, wallet) {
             console.log((new Date()) + ' Server is listening on port ' + port);
         });
         
-        var webServer = new WebSocketServer({httpServer: server, autoAcceptConnections: false, maxReceivedMessageSize: 0xFFFFFFFFFFFFF, maxReceivedFrameSize: 0xFFFFFFFFFFFF});
+        var webServer = new WebSocketServer({httpServer: server, autoAcceptConnections: false, maxReceivedMessageSize: 0xFFFFFFFFFFFFF});
 
         webServer.on('request', (request) => {
             callback(request.accept('raining-protocol', request.origin));

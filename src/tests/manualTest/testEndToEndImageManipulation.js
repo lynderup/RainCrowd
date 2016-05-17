@@ -22,14 +22,11 @@ fs.createReadStream('../test.png')
         var basePort = 5000;
 
         var blockChain = new BlockChain();
-        var raindrop = new Raindrop("127.0.0.1", basePort, basePort + 1000, blockChain);
+        var raindrop = new Raindrop("127.0.0.1", basePort+300, basePort +300 + 1000, blockChain);
 
         var seed = {address: "127.0.0.1", port: basePort, facePort: basePort + 1000};
 
-        for (var i = 1; i <= 3; ++i) {
-            var tkad = new Raindrop("127.0.0.1", basePort + i, basePort + i + 1000, blockChain);
-            tkad.connect(seed);
-        }
+        raindrop.connect(seed);
 
         var length = this.height * this.width;
 
@@ -44,14 +41,17 @@ fs.createReadStream('../test.png')
             }
 
             raindrop.runPrograms(programs, (err, data) => {
+                console.log(data);
+
                 if (err) {
                     // todo correct error messages
                     throw "up";
                 }
 
+
                 for (var c = 0; c < chunks; ++y) {
-                    for (var y = length / chunks * c; y < length / chunks * (c + 1); ++y) {
-                        this.data[y] = data[y];
+                    for (var y = length / chunks; y < length / chunks; ++y) {
+                        this.data[y*(c+1)] = data[c][y];
                     }
                 }
                 this.pack().pipe(fs.createWriteStream('out.png'));

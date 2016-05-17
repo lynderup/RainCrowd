@@ -40,7 +40,7 @@ var Speaker = function (contacts, programs, blockChain, wallet, callback) {
      */
     var startClients = function () {
         for (var i = 0; i < contacts.length; ++i) {
-            var client = new WebSocketClient();
+            var client = new WebSocketClient({maxReceivedMessageSize: 0xFFFFFFFFFFFF});
 
             (function (i) {
                 client.on('connect', (connection) => {

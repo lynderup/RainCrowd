@@ -1,5 +1,7 @@
 var FaceSpeak = require('./../../facespeak').FaceSpeak;
 require('./../../facespeak-syntax').static(global);
+var invertImage = require('../../programs/invert-image').invertImage;
+var eelScale = require('../../programs/eel-scale').eelScale;
 var fs = require('fs'),
     PNG = require('node-png').PNG;
 
@@ -13,38 +15,25 @@ fs.createReadStream('../test.png')
             width: this.width,
             data: this.data
         };
-        var program =
-            _for("heightVar", _array(), "y", 0, this.height,
-                _for("widthVar", "heightVar", "x", 0, this.width,
-                    _let("idx",
-                        _times(
-                            _plus(
-                                _times(this.width, "y"),
-                                "x"),
-                            4),
-                        _subscript(
-                            _subscript(
-                                _subscript(
-                                    "heightVar",
-                                    "idx",
-                                    _minus(255, _subscript("data", "idx"))),
-                                _plus("idx", 1),
-                                _minus(255, _subscript("data", _plus("idx", 1)))
-                            ),
-                            _plus("idx", 2),
-                            _minus(255, _subscript("data", _plus("idx", 2)))
-                        )
-                    )
-                )
-            );
-        process.stdout.write("Interpreting..\n");
         FaceSpeak.showProgress(true);
-        var data = FaceSpeak.interpret(program, env);
-        for (var y = 0; y < this.height; ++y) {
-            for (var x = 0; x < this.width; ++x) {
-                var idx = (this.width * y + x) << 2;
-                this.data[idx] = data[idx];
-            }
+
+        var start = (this.height * this.width) / 4;
+        var stop = (this.height * this.width) / 2;
+
+        var invertProgram = invertImage(start, stop);
+        var data = FaceSpeak.interpret(invertProgram, env);
+        for (var y = start*4; y < stop*4; ++y) {
+            env.data[y] = data[y];
+        }
+
+        start = (this.height * this.width) / 2;
+        stop = (this.height * this.width) / 2 + (this.width * 10);
+
+        var eelScaleProgram = eelScale(start, stop);
+
+        data = FaceSpeak.interpret(eelScaleProgram, env);
+        for (y = start*4; y < stop*4; ++y) {
+            this.data[y] = data[y];
         }
         this.pack().pipe(fs.createWriteStream('out.png'));
     });

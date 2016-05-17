@@ -71,6 +71,7 @@ fs.createReadStream('../test.png')
                     )
                 )
             );
+        FaceSpeak.showProgress(true);
         var data = FaceSpeak.interpret(program, env);
         for (var y = 0; y < this.height; ++y) {
             for (var x = 0; x < this.width; ++x) {

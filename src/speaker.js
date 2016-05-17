@@ -7,15 +7,17 @@ var http = require('http');
 var BlockingQueue = require('block-queue');
 var faceSpeak = require('./facespeak').FaceSpeak;
 
-var Speaker = function (contacts, programs, blockChain, wallet) {
+var Speaker = function (contacts, programs, blockChain, wallet, callback) {
+    var missingCount = programs.length;
     var programIndex = 0;
+    var results = [];
+    var programFor = {};
     var connections = BlockingQueue(1, (server, done) => {
-        console.log("Pop");
         if (programIndex >= programs.length) {
-            console.log("Closing connection");
+            console.log("Closing: " + server.index + " bc: " + programIndex);
             server.connection.close();
         } else {
-            console.log("Sending program: " + programIndex);
+            programFor[server.index] = programIndex;
             var program = programs[programIndex++];
             var coins = wallet.getCoins(faceSpeak.computeCost(program.program));
             if (!coins) {
@@ -42,17 +44,20 @@ var Speaker = function (contacts, programs, blockChain, wallet) {
 
             (function (i) {
                 client.on('connect', (connection) => {
-                    console.log("WebSocket Client Connected");
-                    connections.push({connection: connection, contact: contacts[i]});
-                    connection.on('close', () => console.log("Closed"));
+                    connections.push({connection: connection, contact: contacts[i], index: i});
+                    connection.on('close', (reason, desc) => {
+                        console.log("Closed: " + reason);
+                        console.log(desc);
+                    });
                     connection.on('message', (message) => {
-                        console.log("Received: " + message.utf8Data);
-                        connections.push({connection: connection, contact: contacts[i]});
+                        missingCount--;
+                        results[programFor[i]] = JSON.parse(message.utf8Data);
+                        connections.push({connection: connection, contact: contacts[i], index: i});
+                        if (missingCount == 0) callback(null, results);
                     });
                 });
             })(i);
 
-            console.log(contacts[i].address + ':' + contacts[i].facePort);
             client.connect('ws://' + contacts[i].address + ':' + contacts[i].facePort, 'raining-protocol');
         }
     };

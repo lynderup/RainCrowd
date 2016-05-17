@@ -1,5 +1,5 @@
 var Wallet = function () {
-    var treasure = 10;
+    var treasure = 10000000000000;
 
     this.getCoins = function (length) {
         var coins = null;

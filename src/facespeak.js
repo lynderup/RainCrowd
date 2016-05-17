@@ -17,11 +17,14 @@ var interpreter = {
     showProgress: false,
     totalCost: 0,
     currentCost: 0,
+    currIdx: 0,
     _progress: function () {
         if (!interpreter.showProgress) return;
+        interpreter.currIdx++;
+        if(interpreter.currIdx % 10000 != 0) return;
         //process.stdout.clearLine();  // clear current text
         process.stdout.cursorTo(0);  // move cursor to beginning of line
-        process.stdout.write("Progress: " + (Math.round(1000*interpreter.currentCost / interpreter.totalCost)/10));
+        process.stdout.write("Progress: " + (Math.round(1000*interpreter.currentCost / interpreter.totalCost)/10) + "  ");
     },
     visitBinOp: function (program, env) {
         assert(program.left != undefined, 'Invalid left');

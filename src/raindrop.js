@@ -42,13 +42,12 @@ var Raindrop = function (host, port, facePort, blockChain) {
         });
     };
 
-    this.runPrograms = function (programs) {
+    this.runPrograms = function (programs, callback) {
         getCrowd((err, val) => {
-            console.log("getCrowd");
             for (var i = 0; i < val.length; ++i) {
                 console.log("[" + i + "]" + val[i].facePort);
             }
-            var speaker = new Speaker(val, programs, blockChain, wallet);
+            var speaker = new Speaker(val, programs, blockChain, wallet, callback);
         });
     };
 };

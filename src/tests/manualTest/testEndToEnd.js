@@ -58,5 +58,5 @@ setTimeout(() => {
     }, {
         program: "foo",
         env: {foo: 400000}
-    }]);
+    }], (err, data) => console.log(data));
 }, 3000);

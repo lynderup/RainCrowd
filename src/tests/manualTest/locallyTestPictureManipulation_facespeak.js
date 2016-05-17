@@ -4,7 +4,7 @@ var FaceSpeak = require('./../../facespeak').FaceSpeak;
 var fs = require('fs'),
     PNG = require('node-png').PNG;
 
-fs.createReadStream('super-mario.png')
+fs.createReadStream('../test.png')
     .pipe(new PNG({
         filterType: 4
     }))

@@ -21,8 +21,8 @@ var Face = function (port, blockChain, wallet) {
         server.listen(port, () => {
             console.log((new Date()) + ' Server is listening on port ' + port);
         });
-
-        var webServer = new WebSocketServer({httpServer: server, autoAcceptConnections: false});
+        
+        var webServer = new WebSocketServer({httpServer: server, autoAcceptConnections: false, maxReceivedMessageSize: 0xFFFFFFFFFFFFF, maxReceivedFrameSize: 0xFFFFFFFFFFFF});
 
         webServer.on('request', (request) => {
             callback(request.accept('raining-protocol', request.origin));
@@ -30,6 +30,10 @@ var Face = function (port, blockChain, wallet) {
     };
 
     startServer((connection) => {
+        connection.on('close', (reason, desc) => {
+            console.log("Serverclose: " + reason);
+            console.log("desc: " + desc);
+        });
         connection.on('message', (message) => {
             if (message.type !== 'utf8') {
                 console.log("[Server " + port + "] Bad message type!");
@@ -44,7 +48,7 @@ var Face = function (port, blockChain, wallet) {
                 blockChain.commitTransactionResult(params.id, result);
                 // Even though the client can fetch this result from the blockChain, we are nice and send it directly
                 //  so the client doesn't have to wait for the transaction to get committed by the blockChain.
-                connection.send(JSON.parse(result));
+                connection.send(JSON.stringify(result));
                 // Refuse to do any work, untill we are paid for the previous work.
                 while (!blockChain.checkForCommittedTransaction(params.id)) {
                     ;;; // NOP

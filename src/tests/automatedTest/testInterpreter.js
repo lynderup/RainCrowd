@@ -89,6 +89,20 @@ assert.equal(FaceSpeak.interpret({
     index: 2
 }, {foo: [1, 2, 3, 4]}), 3);
 
+assert.deepEqual(FaceSpeak.interpret({
+    expr: "subscript",
+    body: "foo",
+    index: 2,
+    val: 42
+}, {foo: [1, 2, 3, 4]}), [1, 2, 42, 4]);
+
+assert.deepEqual(FaceSpeak.interpret({
+    expr: "subscript",
+    body: {expr: "array"},
+    index: 0,
+    val: 42
+}), [42]);
+
 assert.equal(FaceSpeak.interpret({
     expr: "subscript",
     body: {

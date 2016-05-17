@@ -80,6 +80,10 @@ var interpreter = {
         var body = interpreter.visit(program.body, env);
         var index = interpreter.visit(program.index, env);
         if(typeof body != 'object') throw 'Subscript was not an object';
+        if(typeof program.val != 'undefined') {
+            body[index] = program.val;
+            return body;
+        }
         return body[index];
     },
     visit: function (program, env) {
@@ -89,6 +93,10 @@ var interpreter = {
 
         assert(typeof program == 'object', 'Invalid program type');
         assert(typeof program.expr == 'string', 'Invalid expr');
+        
+        // {expr: "array"}
+        if(program.expr == "array") return [];
+
         if (arrayContains(binOps, program.expr)) return interpreter.visitBinOp(program, env);
         else if (arrayContains(branchOps, program.expr)) return interpreter.visitBranchOp(program, env);
         else if (arrayContains(letOps, program.expr)) return interpreter.visitLetOp(program, env);

@@ -79,3 +79,21 @@ assert.equal(FaceSpeak.interpret({
         right: "foo"
     }
 }), 5);
+
+assert.equal(FaceSpeak.interpret("foo", {foo: 5}), 5);
+
+assert.equal(FaceSpeak.interpret({
+    expr: "subscript",
+    body: "foo",
+    index: 2
+}, {foo: [1, 2, 3, 4]}), 3);
+
+assert.equal(FaceSpeak.interpret({
+    expr: "subscript",
+    body: {
+        expr: "subscript",
+        body: "foo",
+        index: 1
+    },
+    index: 0
+}, {foo: [[0, 1], [2, 3]]}), 2);

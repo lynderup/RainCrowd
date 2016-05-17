@@ -7,6 +7,7 @@ var binOps = ["plus", "times", "minus", "divide"];
 var branchOps = ["if"];
 var letOps = ["let"];
 var loopOps = ["for"];
+var subscriptOps = ["subscript"];
 
 function arrayContains(arr, elem) {
     return arr.indexOf(elem) > -1;
@@ -71,6 +72,14 @@ var interpreter = {
         }
         return newEnv[program.loopvar];
     },
+    visitSubscriptOp: function (program, env) {
+        assert(typeof program.body != 'undefined', 'Invalid body expression');
+        assert(typeof program.index != 'undefined', 'Invalid index expression');
+        var body = interpreter.visit(program.body, env);
+        var index = interpreter.visit(program.index, env);
+        if(typeof body != 'object') throw 'Subscript was not an object';
+        return body[index];
+    },
     visit: function (program, env) {
         if (typeof program == "number") return program;
         if (typeof program == "boolean") return program;
@@ -82,6 +91,7 @@ var interpreter = {
         else if (arrayContains(branchOps, program.expr)) return interpreter.visitBranchOp(program, env);
         else if (arrayContains(letOps, program.expr)) return interpreter.visitLetOp(program, env);
         else if (arrayContains(loopOps, program.expr)) return interpreter.visitLoopOp(program, env);
+        else if (arrayContains(subscriptOps, program.expr)) return interpreter.visitSubscriptOp(program, env);
 
         throw "Invalid expression: " + program.expr;
     },
@@ -133,6 +143,10 @@ var FaceSpeak = {
             var costBody = FaceSpeak.computeCost(program.body);
             var loopCount = program.to - program.from;
             return costInitial + (costBody * loopCount) + 1;
+        } else if (arrayContains(subscriptOps, program.expr)) {
+            var costBody = FaceSpeak.computeCost(program.body);
+            var costIndex = FaceSpeak.computeCost(program.index);
+            return costBody + costIndex + 1;
         }
     },
     generateRandom: (size) => {

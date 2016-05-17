@@ -7,15 +7,21 @@ var fs = require('fs'),
 var Raindrop = require('./../../raindrop').Raindrop;
 var BlockChain = require("./../../blockChain").BlockChain;
 
-fs.createReadStream('../test.png')
+fs.createReadStream('../bigtest.png')
     .pipe(new PNG({
         filterType: 4
     }))
     .on('parsed', function () {
+        var dataArray = [];
+
+        for (var i = 0; i < this.data.length; i++) {
+            dataArray.push(this.data[i]);
+        }
+
         var env = {
             height: this.height,
             width: this.width,
-            data: this.data
+            data: dataArray
         };
         FaceSpeak.showProgress(true);
 
@@ -29,31 +35,31 @@ fs.createReadStream('../test.png')
         raindrop.connect(seed);
 
         var length = this.height * this.width;
-
+        var chunks = 10;
+        var chunkLength = Math.floor(length / chunks);
         setTimeout(() => {
-            var chunks = 10;
             var programs = [];
             for (var i = 0; i < chunks; ++i) {
                 programs.push({
-                    program: invertImage(length / chunks * i, length / chunks * (i + 1)),
+                    program: invertImage(chunkLength * i, chunkLength * (i + 1)),
                     env: env
                 });
             }
 
             raindrop.runPrograms(programs, (err, data) => {
-                console.log(data);
+                //console.log(data);
 
                 if (err) {
                     // todo correct error messages
                     throw "up";
                 }
 
-
-                for (var c = 0; c < chunks; ++y) {
-                    for (var y = length / chunks; y < length / chunks; ++y) {
-                        this.data[y*(c+1)] = data[c][y];
+                for (var c = 0; c < chunks; ++c) {
+                    for (var y = chunkLength * c * 4; y < data[c].length; ++y) {
+                        this.data[y] = data[c][y];
                     }
                 }
+
                 this.pack().pipe(fs.createWriteStream('out.png'));
             });
         }, 3000);

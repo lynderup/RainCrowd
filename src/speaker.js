@@ -27,7 +27,8 @@ var Speaker = function (contacts, programs, blockChain, wallet, callback) {
             }
             var transaction = blockChain.startTransaction(server.contact, coins);
             if (typeof transaction == "number") {
-                server.connection.send(JSON.stringify({id: transaction, program: program.program, env: program.env}));
+                var data = JSON.stringify({id: transaction, program: program.program, env: program.env}, null, 2);
+                server.connection.send(data);
             } else {
                 console.log("BlockChain rejected your startTransaction request");
             }

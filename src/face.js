@@ -21,8 +21,13 @@ var Face = function (port, blockChain, wallet) {
         server.listen(port, () => {
             console.log((new Date()) + ' Server is listening on port ' + port);
         });
-        
-        var webServer = new WebSocketServer({httpServer: server, autoAcceptConnections: false, maxReceivedMessageSize: 0xFFFFFFFFFFFFF});
+
+        var webServer = new WebSocketServer({
+            httpServer: server,
+            autoAcceptConnections: false,
+            maxReceivedMessageSize: 0xFFFFFFFFFFFFF,
+            keepalive: false
+        });
 
         webServer.on('request', (request) => {
             callback(request.accept('raining-protocol', request.origin));
@@ -51,7 +56,9 @@ var Face = function (port, blockChain, wallet) {
                 connection.send(JSON.stringify(result));
                 // Refuse to do any work, untill we are paid for the previous work.
                 while (!blockChain.checkForCommittedTransaction(params.id)) {
-                    ;;; // NOP
+                    ;
+                    ;
+                    ; // NOP
                 }
                 wallet.addCoins(programCost);
                 console.log("[" + port + "]" + " - now has: " + wallet.getWealth());

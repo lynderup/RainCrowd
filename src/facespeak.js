@@ -75,7 +75,7 @@ var interpreter = {
         if (typeof program == "number") return program;
         if (typeof program == "boolean") return program;
         if (typeof program == "string") return interpreter.lookup(env, program);
-        
+
         assert(typeof program == 'object', 'Invalid program type');
         assert(typeof program.expr == 'string', 'Invalid expr');
         if (arrayContains(binOps, program.expr)) return interpreter.visitBinOp(program, env);
@@ -101,34 +101,38 @@ var interpreter = {
 
 var FaceSpeak = {
 // TODO consistency
-    interpret: (program) => {
-        return interpreter.visit(program, {});
+    interpret: (program, env) => {
+        var _env = env;
+        if (_env == null) {
+            _env = {};
+        }
+        return interpreter.visit(program, _env);
     },
     computeCost: function (program) {
-        if(typeof program == 'number') {
+        if (typeof program == 'number') {
             return 0;
         }
-        if(typeof program == 'string') {
+        if (typeof program == 'string') {
             return 0;
         }
-        if(arrayContains(binOps, program.expr)) {
+        if (arrayContains(binOps, program.expr)) {
             var costRight = FaceSpeak.computeCost(program.right);
             var costLeft = FaceSpeak.computeCost(program.left);
             return costLeft + costRight + 1;
-        } else if(arrayContains(branchOps, program.expr)) {
+        } else if (arrayContains(branchOps, program.expr)) {
             var costCond = FaceSpeak.computeCost(program.cond);
             var costBody = FaceSpeak.computeCost(program.body);
             var costElse = FaceSpeak.computeCost(program.else);
             return costCond + Math.max(costBody, costElse) + 1;
-        } else if(arrayContains(letOps, program.expr)) {
+        } else if (arrayContains(letOps, program.expr)) {
             var costVar = FaceSpeak.computeCost(program.varexpr);
             var costBody = FaceSpeak.computeCost(program.body);
             return costVar + costBody + 1;
-        } else if(arrayContains(loopOps, program.expr)) {
+        } else if (arrayContains(loopOps, program.expr)) {
             var costInitial = FaceSpeak.computeCost(program.initialval);
             var costBody = FaceSpeak.computeCost(program.body);
             var loopCount = program.to - program.from;
-            return  costInitial + (costBody * loopCount) + 1;
+            return costInitial + (costBody * loopCount) + 1;
         }
     },
     generateRandom: (size) => {

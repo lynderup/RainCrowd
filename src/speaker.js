@@ -17,15 +17,15 @@ var Speaker = function (contacts, programs, blockChain, wallet) {
         } else {
             console.log("Sending program: " + programIndex);
             var program = programs[programIndex++];
-            var coins = wallet.getCoins(faceSpeak.computeCost(program));
+            var coins = wallet.getCoins(faceSpeak.computeCost(program.program));
             if (!coins) {
-                console.log("Not enough currency to compute " + JSON.stringify(program, null, 2));
+                console.log("Not enough currency to compute " + JSON.stringify(program.program, null, 2));
                 done();
                 return;
             }
             var transaction = blockChain.startTransaction(server.contact, coins);
             if (typeof transaction == "number") {
-                server.connection.send(JSON.stringify({id: transaction, program: program}));
+                server.connection.send(JSON.stringify({id: transaction, program: program.program, env: program.env}));
             } else {
                 console.log("BlockChain rejected your startTransaction request");
             }

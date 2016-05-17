@@ -16,36 +16,47 @@ for (var i = 1; i <= 3; ++i) {
 setTimeout(() => {
     console.log("timeout");
     raindrop.runPrograms([{
-        expr: "plus",
-        left: {
-            expr: "times",
-            left: 3,
-            right: 3
-        },
-        right: 1
+        program: {
+            expr: "plus",
+            left: {
+                expr: "times",
+                left: 3,
+                right: 3
+            },
+            right: 1
+        }
     }, {
-        expr: "plus",
-        left: {
-            expr: "times",
-            left: 5,
-            right: 3
-        },
-        right: 1
+        program: {
+            expr: "plus",
+            left: {
+                expr: "times",
+                left: 5,
+                right: 3
+            },
+            right: 1
+        }
     }, {
-        expr: "plus",
-        left: {
-            expr: "times",
-            left: 5,
-            right: 3
-        },
-        right: 2
+        program: {
+            expr: "plus",
+            left: {
+                expr: "times",
+                left: 5,
+                right: 3
+            },
+            right: 2
+        }
     }, {
-        expr: "plus",
-        left: {
-            expr: "times",
-            left: 5,
+        program: {
+            expr: "plus",
+            left: {
+                expr: "times",
+                left: 5,
+                right: 3
+            },
             right: 3
-        },
-        right: 3
+        }
+    }, {
+        program: "foo",
+        env: {foo: 400000}
     }]);
 }, 3000);

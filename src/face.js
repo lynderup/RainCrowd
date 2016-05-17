@@ -35,12 +35,12 @@ var Face = function (port, blockChain, wallet) {
                 console.log("[Server " + port + "] Bad message type!");
             } else {
                 var params = JSON.parse(message.utf8Data);
-                var programCost = FaceSpeak.computeCost(params.program);
+                var programCost = FaceSpeak.computeCost(params.program, params.env);
                 if (!blockChain.checkForVerifiedTransaction(params.id)) {
                     connection.close();
                     return;
                 }
-                var result = FaceSpeak.interpret(params.program);
+                var result = FaceSpeak.interpret(params.program, params.env);
                 blockChain.commitTransactionResult(params.id, result);
                 // Even though the client can fetch this result from the blockChain, we are nice and send it directly
                 //  so the client doesn't have to wait for the transaction to get committed by the blockChain.

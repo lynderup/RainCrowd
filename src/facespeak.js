@@ -58,6 +58,7 @@ var interpreter = {
     },
     visitLoopOp: function (program, env) {
         assert(typeof program.loopvar == 'string', 'Invalid loop variable name');
+        assert(typeof program.indexvar == 'string', 'Invalid index variable name');
         assert(typeof program.initialval != 'undefined', 'Invalid initial value expression');
         assert(typeof program.from == 'number', 'start bound was not a number');
         assert(typeof program.to == 'number', 'end bound was not a number');
@@ -68,6 +69,7 @@ var interpreter = {
         var initial = interpreter.visit(program.initialval, env);
         var newEnv = interpreter.extend(env, program.loopvar, initial);
         for (var i = from; i < to; ++i) {
+            newEnv[program.indexvar] = i;
             newEnv[program.loopvar] = interpreter.visit(program.body, newEnv);
         }
         return newEnv[program.loopvar];

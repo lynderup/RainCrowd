@@ -70,6 +70,7 @@ assert.equal(FaceSpeak.interpret({
 assert.equal(FaceSpeak.interpret({
     expr: "for",
     loopvar: "foo",
+    indexvar: "i",
     initialval: 2,
     from: 0,
     to: 3,

@@ -110,6 +110,7 @@ assert.equal(FaceSpeak.computeCost({
 assert.equal(FaceSpeak.computeCost({
     expr: "for",
     loopvar: "foo",
+    indexvar: "i",
     initialval: 2,
     from: 0,
     to: 3,

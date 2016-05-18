@@ -7,7 +7,7 @@ var fs = require('fs'),
 var Raindrop = require('./../../raindrop').Raindrop;
 var BlockChain = require("./../../blockChain").BlockChain;
 
-fs.createReadStream('../bigtest.png')
+fs.createReadStream('../super-mario.png')
     .pipe(new PNG({
         filterType: 4
     }))
@@ -35,7 +35,7 @@ fs.createReadStream('../bigtest.png')
         raindrop.connect(seed);
 
         var length = this.height * this.width;
-        var chunks = 10;
+        var chunks = 3;
         var chunkLength = Math.floor(length / chunks);
         setTimeout(() => {
             var programs = [];
@@ -45,7 +45,7 @@ fs.createReadStream('../bigtest.png')
                     env: env
                 });
             }
-
+            var start = new Date();
             raindrop.runPrograms(programs, (err, data) => {
                 //console.log(data);
 
@@ -59,6 +59,10 @@ fs.createReadStream('../bigtest.png')
                         this.data[y] = data[c][y];
                     }
                 }
+
+                var end = new Date();
+                var diff = Math.abs(end - start);
+                console.log("It took " + diff + "ms");
 
                 this.pack().pipe(fs.createWriteStream('out.png'));
             });

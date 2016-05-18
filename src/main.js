@@ -5,7 +5,7 @@ var blockChain = new BlockChain();
 var args = process.argv.slice(2);
 var port = parseInt(args[0]);
 
-var raindrop = new Raindrop("127.0.0.1", port, port + 1000, blockChain);
+var raindrop = new Raindrop("0.0.0.0", port, port + 1000, blockChain);
 
 if (args.length >= 3) {
     var seed = {

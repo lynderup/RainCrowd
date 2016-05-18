@@ -9,16 +9,19 @@ var faceSpeak = require('./facespeak').FaceSpeak;
 
 var Speaker = function (contacts, programs, blockChain, wallet, callback) {
     var missingCount = programs.length;
-    var programIndex = 0;
+    var missingPrograms = [];
+    for(var i = 0; i < programs.length; ++i) missingPrograms.push(i);
     var results = [];
     var programFor = {};
+    var pendingServers = [];
     var connections = BlockingQueue(1, (server, done) => {
-        if (programIndex >= programs.length) {
-            console.log("Closing: " + server.index + " bc: " + programIndex);
-            server.connection.close();
-        } else {
+        if (missingCount <= 0 || missingPrograms.length <= 0) {
+            pendingServers.push(server);
+        } else if(missingPrograms.length > 0) {
+            var programIndex = missingPrograms.pop();
             programFor[server.index] = programIndex;
-            var program = programs[programIndex++];
+            console.log("Computing for: " + programIndex);
+            var program = programs[programIndex];
             var coins = wallet.getCoins(faceSpeak.computeCost(program.program));
             if (!coins) {
                 console.log("Not enough currency to compute " + JSON.stringify(program.program, null, 2));
@@ -47,6 +50,12 @@ var Speaker = function (contacts, programs, blockChain, wallet, callback) {
                 client.on('connect', (connection) => {
                     connections.push({connection: connection, contact: contacts[i], index: i});
                     connection.on('close', (reason, desc) => {
+                        if(reason != 1000) {
+                            missingPrograms.push(programFor[i]);
+                            while(pendingServers.length > 0) {
+                                connections.push(pendingServers.pop());
+                            }
+                        }
                         console.log("Closed: " + reason);
                         console.log(desc);
                     });
@@ -54,7 +63,13 @@ var Speaker = function (contacts, programs, blockChain, wallet, callback) {
                         missingCount--;
                         results[programFor[i]] = JSON.parse(message.utf8Data);
                         connections.push({connection: connection, contact: contacts[i], index: i});
-                        if (missingCount == 0) callback(null, results);
+                        if (missingCount == 0) {
+                            while (pendingServers.length > 0) {
+                                var server = pendingServers.pop();
+                                server.connection.close();
+                            }
+                            callback(null, results);
+                        }
                     });
                 });
             })(i);

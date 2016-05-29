@@ -5,7 +5,7 @@ var eelScale = require('../../programs/eel-scale').eelScale;
 var fs = require('fs'),
     PNG = require('node-png').PNG;
 
-fs.createReadStream('../test.png')
+fs.createReadStream('./../test.png')
     .pipe(new PNG({
         filterType: 4
     }))

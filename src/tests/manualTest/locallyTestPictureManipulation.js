@@ -1,7 +1,7 @@
 var fs = require('fs'),
     PNG = require('node-png').PNG;
 
-fs.createReadStream('teletobies.PNG')
+fs.createReadStream('./../test.png')
     .pipe(new PNG({
         filterType: 4
     }))

@@ -20,7 +20,6 @@ var Speaker = function (contacts, programs, blockChain, wallet, callback) {
         } else if(missingPrograms.length > 0) {
             var programIndex = missingPrograms.pop();
             programFor[server.index] = programIndex;
-            console.log("Computing for: " + programIndex);
             var program = programs[programIndex];
             var coins = wallet.getCoins(faceSpeak.computeCost(program.program));
             if (!coins) {
@@ -30,6 +29,7 @@ var Speaker = function (contacts, programs, blockChain, wallet, callback) {
             }
             var transaction = blockChain.startTransaction(server.contact, coins);
             if (typeof transaction == "number") {
+		console.log("---> Sent program chunk " + programIndex + " to " + server.connection.remoteAddress);
                 var data = JSON.stringify({id: transaction, program: program.program, env: program.env}, null, 2);
                 server.connection.send(data);
             } else {
@@ -61,6 +61,7 @@ var Speaker = function (contacts, programs, blockChain, wallet, callback) {
                     });
                     connection.on('message', (message) => {
                         missingCount--;
+			console.log("<--- Received result for chunk " + programFor[i] +  " from " + connection.remoteAddress);
                         results[programFor[i]] = JSON.parse(message.utf8Data);
                         connections.push({connection: connection, contact: contacts[i], index: i});
                         if (missingCount == 0) {

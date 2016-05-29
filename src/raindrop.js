@@ -45,7 +45,7 @@ var Raindrop = function (host, port, facePort, blockChain) {
     this.runPrograms = function (programs, callback) {
         getCrowd((err, val) => {
             for (var i = 0; i < val.length; ++i) {
-                console.log("[" + i + "]" + val[i].facePort);
+                console.log("[" + i + "]" + val[i].address);
             }
             var speaker = new Speaker(val, programs, blockChain, wallet, callback);
         });

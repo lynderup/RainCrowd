@@ -29,6 +29,7 @@ var Speaker = function (contacts, programs, blockChain, wallet, callback) {
             }
             var transaction = blockChain.startTransaction(server.contact, coins);
             if (typeof transaction == "number") {
+		console.log("---> Sent program chunk " + programIndex + " to " + server.connection.remoteAddress);
                 var data = JSON.stringify({id: transaction, program: program.program, env: program.env}, null, 2);
                 server.connection.send(data);
             } else {
@@ -60,7 +61,7 @@ var Speaker = function (contacts, programs, blockChain, wallet, callback) {
                     });
                     connection.on('message', (message) => {
                         missingCount--;
-                        console.log("Received result from " + connection.remoteAddress);
+			console.log("<--- Received result for chunk " + programFor[i] +  " from " + connection.remoteAddress);
                         results[programFor[i]] = JSON.parse(message.utf8Data);
                         connections.push({connection: connection, contact: contacts[i], index: i});
                         if (missingCount == 0) {

@@ -3,6 +3,7 @@ node_modules*
 
 ## Emacs temp files
 *~
+*#*#
 
 ## IntelliJ
 

@@ -5,7 +5,7 @@ var BlockChain = function () {
         for (var i = 0; i < coins.length; i++) {
             cost++;
         }
-        console.log("Started transaction for " + contact.port + " for a cost of " + cost);
+        console.log("Started transaction for " + contact.address + " for a cost of " + cost);
         return 42;
     };
 

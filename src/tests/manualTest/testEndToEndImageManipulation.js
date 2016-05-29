@@ -28,9 +28,9 @@ fs.createReadStream('./../test.png')
         var basePort = 5001;
 
         var blockChain = new BlockChain();
-        var raindrop = new Raindrop("192.81.221.40", basePort, basePort + 100, blockChain);
+        var raindrop = new Raindrop("139.59.178.150", basePort, basePort + 100, blockChain);
 
-        var seed = {address: "146.185.170.7", port: basePort, facePort: basePort + 100};
+        var seed = {address: "146.185.134.209", port: basePort, facePort: basePort + 100};
 
         raindrop.connect(seed);
 

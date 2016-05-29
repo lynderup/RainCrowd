@@ -1,21 +1,26 @@
-function eelScale(from, to) {
+function eelScale(from, to, width, height) {
     return _for("heightVar", _array(), "y", from, to,
         _let("idx",
             _times("y", 4),
             _let("totals",
-                _for("ihV", _array(), "i", from, to,
-                    _subscript(
+                _for("totalsVal",
+                    _subscript(_subscript(_subscript(_array(), 0, 0), 1, 0), 2, 0),
+                    "i", 0, width * height,
+                    _let("idx2",
+                        _times("i", 4),
                         _subscript(
                             _subscript(
-                                "ihV",
-                                0,
-                                _modulo(_pow(_subscript("ihV", 0), 2), 255)
+                                _subscript(
+                                    "totalsVal",
+                                    0,
+                                    _plus(_subscript("totalsVal", 0), _modulo(_pow(_subscript("data", "idx2"), 2), 255))
+                                ),
+                                1,
+                                _plus(_subscript("totalsVal", 1), _modulo(_pow(_subscript("data", _plus("idx2", 1)), 2), 255))
                             ),
-                            1,
-                            _modulo(_pow(_subscript("ihV", 1), 2), 255)
-                        ),
-                        2,
-                        _modulo(_pow(_subscript("ihV", 2), 2), 255)
+                            2,
+                            _plus(_subscript("totalsVal", 2), _modulo(_pow(_subscript("data", _plus("idx2", 2)), 2), 255))
+                        )
                     )
                 ),
                 _let("totalRed", _subscript("totals", 0),

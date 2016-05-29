@@ -7,7 +7,7 @@ var fs = require('fs'),
 var Raindrop = require('./../../raindrop').Raindrop;
 var BlockChain = require("./../../blockChain").BlockChain;
 
-fs.createReadStream('../rem_test.png')
+fs.createReadStream('../super-mario.png')
     .pipe(new PNG({
         filterType: 4
     }))

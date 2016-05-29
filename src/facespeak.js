@@ -13,6 +13,8 @@ function arrayContains(arr, elem) {
     return arr.indexOf(elem) > -1;
 }
 
+var INSTRUCTION_COST = 1/10000;
+
 var interpreter = {
     showProgress: false,
     totalCost: 0,
@@ -166,30 +168,30 @@ var FaceSpeak = {
     computeCost: (program, shallow) => {
         if (typeof program == 'number') return 0;
         if (typeof program == 'string') return 0;
-        if (program.expr == "array") return 1;
+        if (program.expr == "array") return INSTRUCTION_COST;
 
         if (shallow) {
             // handle special cases here
-            return 1;
+            return INSTRUCTION_COST;
         }
         if (arrayContains(binOps, program.expr)) {
             var costRight = FaceSpeak.computeCost(program.right);
             var costLeft = FaceSpeak.computeCost(program.left);
-            return costLeft + costRight + 1;
+            return costLeft + costRight + INSTRUCTION_COST;
         } else if (arrayContains(branchOps, program.expr)) {
             var costCond = FaceSpeak.computeCost(program.cond);
             var costBody = FaceSpeak.computeCost(program.body);
             var costElse = FaceSpeak.computeCost(program.else);
-            return costCond + Math.max(costBody, costElse) + 1;
+            return costCond + Math.max(costBody, costElse) + INSTRUCTION_COST;
         } else if (arrayContains(letOps, program.expr)) {
             var costVar = FaceSpeak.computeCost(program.varexpr);
             var costBody = FaceSpeak.computeCost(program.body);
-            return costVar + costBody + 1;
+            return costVar + costBody + INSTRUCTION_COST;
         } else if (arrayContains(loopOps, program.expr)) {
             var costInitial = FaceSpeak.computeCost(program.initialval);
             var costBody = FaceSpeak.computeCost(program.body);
             var loopCount = program.to - program.from;
-            return costInitial + (costBody * loopCount) + 1;
+            return costInitial + (costBody * loopCount) + INSTRUCTION_COST;
         } else if (arrayContains(subscriptOps, program.expr)) {
             var costBody = FaceSpeak.computeCost(program.body);
             var costIndex = FaceSpeak.computeCost(program.index);
@@ -197,7 +199,7 @@ var FaceSpeak = {
             if(typeof program.val != 'undefined') {
                 costVal = FaceSpeak.computeCost(program.val);
             }
-            return costBody + costIndex + costVal + 1;
+            return costBody + costIndex + costVal + INSTRUCTION_COST;
         }
     },
     generateRandom: (size) => {
